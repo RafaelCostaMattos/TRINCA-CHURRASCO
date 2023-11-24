@@ -12,6 +12,19 @@ const UIContainer = styled.div`
   flex-direction: column;
 `;
 
+const UITitle = styled.div`
+  position: absolute;
+  top: 10%;
+  left: 43%;
+
+  > label {
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 800;
+    line-height: normal;
+  }
+`;
+
 const UIImage = styled.div`
   width: 100vw;
   height: 30vh;
@@ -32,6 +45,9 @@ export default function UILayout({ children }: { children: ReactNode }) {
   return (
     <UIContainer>
       <UIImage>
+        <UITitle>
+          <label>Agenda de Churras</label>
+        </UITitle>
         <Image
           src="/images/background_yellow_header.svg"
           alt="background"

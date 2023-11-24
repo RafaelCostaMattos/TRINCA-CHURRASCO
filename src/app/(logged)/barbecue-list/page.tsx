@@ -1,29 +1,15 @@
 'use client';
+
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import { IBarbecue } from '@/shared/interfaces/list.inteface';
-import DialogAddBarbecue from '@/shared/components/dialogs/add-barbecue';
 import { useState } from 'react';
-import { useLocalStorageBarbecue } from '@/shared/hooks/useLocalStorage.hook';
+import { useBarbecueList } from '@/shared/hooks/useBarbecueList.hook';
+import DialogAddBarbecue from '@/shared/components/dialogs/add-barbecue';
+import { initList } from '@/shared/constants/list.constant';
 
-const DashboardImage = styled.div`
-  width: 100vw;
-  height: 35%;
-`;
-
-const DashboardList = styled.div`
-  background: var(--background-00);
-
-  display: flex;
-  flex-flow: column wrap;
-  flex-direction: row;
-  max-width: 100%;
-  gap: var(--gap-24);
-  justify-content: center;
-`;
-
-const DashboardCard = styled.div`
+const Card = styled.div`
   display: flex;
   flex-direction: column;
   padding: var(--padding);
@@ -39,7 +25,7 @@ const DashboardCard = styled.div`
   cursor: pointer;
 `;
 
-const DashboardCardText = styled.div`
+const CardText = styled.div`
   display: flex;
   flex-direction: column;
   gap: var(--gar-8);
@@ -60,7 +46,7 @@ const DashboardCardText = styled.div`
   }
 `;
 
-const DashboardCardValues = styled.div`
+const CardValues = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -81,7 +67,7 @@ const DashboardCardValues = styled.div`
   }
 `;
 
-const DashboardCardAdd = styled.div`
+const CardAdd = styled.div`
   display: flex;
   flex-direction: column;
   gap: var(--gap-8);
@@ -96,7 +82,7 @@ const DashboardCardAdd = styled.div`
   }
 `;
 
-const DashboardIconAdd = styled.div`
+const IconAdd = styled.div`
   background: #ffd836;
   width: 90px;
   height: 90px;
@@ -109,7 +95,7 @@ const DashboardIconAdd = styled.div`
 
 export default function Dashboard() {
   const router = useRouter();
-  const { list, addNewBarbecueLocalStorage } = useLocalStorageBarbecue();
+  const { list, updateBarbecueLocalStorage } = useBarbecueList(initList);
   const [open, setOpen] = useState<boolean>(false);
 
   const handleCloseDialog = () => {
@@ -117,24 +103,23 @@ export default function Dashboard() {
   };
 
   const handleItem = (id: number) => {
-    router.push(`/admin/${id}`);
+    router.push(`/barbecue-list/${id}`);
   };
 
   const handleAddBarbecue = (barbecua: IBarbecue) => {
-    console.log(barbecua);
-    addNewBarbecueLocalStorage(barbecua);
+    updateBarbecueLocalStorage([...list, barbecua]);
     handleCloseDialog();
   };
 
   return (
     <>
       {list.map((data: IBarbecue, i: number) => (
-        <DashboardCard key={i} onClick={() => handleItem(i)}>
-          <DashboardCardText>
+        <Card key={i} onClick={() => handleItem(i)}>
+          <CardText>
             <label>{data.date}</label>
             <span>{data.title}</span>
-          </DashboardCardText>
-          <DashboardCardValues>
+          </CardText>
+          <CardValues>
             <div>
               <Image src="/images/icon_people.svg" alt="icon-money" width={20} height={20} priority />
               <label>{data.people.length}</label>
@@ -144,17 +129,17 @@ export default function Dashboard() {
               <Image src="/images/icon_people.svg" alt="icon-money" width={20} height={20} priority />
               <label>{data.total}</label>
             </div>
-          </DashboardCardValues>
-        </DashboardCard>
+          </CardValues>
+        </Card>
       ))}
-      <DashboardCard onClick={() => setOpen(true)}>
-        <DashboardCardAdd>
-          <DashboardIconAdd>
+      <Card onClick={() => setOpen(true)}>
+        <CardAdd>
+          <IconAdd>
             <Image src="/images/icon_bbq.svg" alt="icon-money" width={40} height={44} priority />
-          </DashboardIconAdd>
+          </IconAdd>
           <label>Adicionar Churrasco</label>
-        </DashboardCardAdd>
-      </DashboardCard>
+        </CardAdd>
+      </Card>
       <DialogAddBarbecue isOpen={open} onClose={handleCloseDialog} onSubmit={handleAddBarbecue} />
     </>
   );

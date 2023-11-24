@@ -121,7 +121,7 @@ export default function SignIn() {
     //   return;
     // }
 
-    router.replace('/admin');
+    router.replace('/barbecue-list');
   };
 
   return (

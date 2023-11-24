@@ -2,9 +2,8 @@ import { IBarbecue } from '../interfaces/list.inteface';
 
 export const initList: IBarbecue[] = [
   {
-    date: '2023-12-01',
+    date: '01/12/23',
     title: 'Níver do Gui',
-    suggested: 15,
     total: 250,
     people: [
       {
@@ -100,9 +99,8 @@ export const initList: IBarbecue[] = [
     ],
   },
   {
-    date: '2023-12-23',
+    date: '23/12/23',
     title: 'Final de Ano',
-    suggested: 28,
     total: 250,
     people: [
       {
@@ -198,9 +196,8 @@ export const initList: IBarbecue[] = [
     ],
   },
   {
-    date: '2024-01-06',
+    date: '03/01/24',
     title: 'Sem motivo',
-    suggested: 12,
     total: 250,
     people: [
       {

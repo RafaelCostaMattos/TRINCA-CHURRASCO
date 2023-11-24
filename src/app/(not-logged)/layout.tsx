@@ -9,7 +9,7 @@ interface IPrivateLayout {
 
 export default async function PrivateLayout({ children }: IPrivateLayout) {
   const session = await getServerSession(nextAuthOptions);
-  if (session) redirect('/admin');
+  if (session) redirect('/barbecue-list');
 
   return <>{children}</>;
 }

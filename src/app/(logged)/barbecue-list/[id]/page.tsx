@@ -1,12 +1,14 @@
 'use client';
 import Image from 'next/image';
 import styled from 'styled-components';
-import { IBarbecue, IPerson } from '@/shared/interfaces/list.inteface';
+import { IPerson } from '@/shared/interfaces/list.inteface';
 import CurrencyFormat from 'react-currency-format';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DialogAddParticipation from '@/shared/components/dialogs/add-participation';
-import { useLocalStorageBarbecue } from '@/shared/hooks/useLocalStorage.hook';
 import { redirect } from 'next/navigation';
+import { useBarbecueById } from '@/shared/hooks/useBarbecueById.hook';
+import Checkbox from '@/shared/components/checkbox';
+import { Button } from '@mui/material';
 
 const Card = styled.div`
   display: flex;
@@ -130,38 +132,6 @@ const ParticipantItem = styled.div`
   }
 `;
 
-const CheckboxDisplay = styled.label``;
-
-const HiddenCheckbox = styled.input.attrs({
-  type: 'checkbox',
-})`
-  border: 0;
-  clip: rect(0 0 0 0);
-  clippath: inset(50%);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  white-space: nowrap;
-  width: 1px;
-`;
-
-const StyledCheckbox = styled.div<{ checked: boolean }>`
-  display: inline-block;
-  width: 25px;
-  height: 25px;
-  border: 2px solid;
-  background: ${(props) => (props.checked ? 'var(--background-01)' : 'transparent')};
-  border-color: ${(props) => (props.checked ? 'var(--background-01)' : '#998220')};
-  border-radius: 50%;
-  transition: all 150ms;
-
-  ${HiddenCheckbox}:focus + & {
-    box-shadow: 0 0 0 3px pink;
-  }
-`;
-
 const Divider = styled.div`
   opacity: 0.5;
   background: #e5c231;
@@ -188,39 +158,48 @@ const AddParticipantCard = styled.div`
   }
 `;
 
+const Payed = styled.label`
+  font-size: 21px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  color: green;
+`;
+
 export default function DashboardItem({ params: { id } }: { params: { id: string } }) {
-  const { list, updateBarbecueLocalStorage, getBarbecueListByIndex } = useLocalStorageBarbecue();
+  const { barbecue, loading, updateBarbecueIndexLocalStorage } = useBarbecueById(Number(id));
 
   const [open, setOpen] = useState<boolean>(false);
-  const [barbecue, setBarbecue] = useState<IBarbecue | undefined>(getBarbecueListByIndex(Number(id)));
 
+  if (loading) return;
   if (!barbecue) redirect('/');
-
-  useEffect(() => {
-    setBarbecue(getBarbecueListByIndex(Number(id)));
-  }, [list]);
 
   const handleCloseDialog = () => {
     setOpen(false);
   };
 
-  const handleAddPersion = (person: IPerson) => {
-    updateBarbecueLocalStorage({ ...barbecue, people: [person, ...(barbecue.people ?? [])] });
+  const handleAdd = (person: IPerson) => {
+    updateBarbecueIndexLocalStorage({ ...barbecue, people: [person, ...(barbecue.people ?? [])] });
     handleCloseDialog();
   };
 
-  const handlePerson = (name: string) => {
-    if (barbecue.people === undefined) return;
-
-    const peopleRefresh = barbecue.people.map((data: IPerson) => {
-      if (data.name === name) {
-        return { ...data, confirmed: !data.confirmed };
-      }
-
-      return data;
-    });
-    updateBarbecueLocalStorage({ ...barbecue, people: peopleRefresh });
+  const handleRemove = (index: number) => {
+    updateBarbecueIndexLocalStorage({ ...barbecue, people: barbecue.people.filter((p, i) => i !== index) });
+    handleCloseDialog();
   };
+
+  const handleConfirm = (index: number) => {
+    barbecue.people[index].confirmed = !barbecue.people[index].confirmed;
+    barbecue.total = calcTotal();
+    updateBarbecueIndexLocalStorage(barbecue);
+  };
+
+  const calcTotal = () => barbecue.people.reduce((accumulator: number, data: IPerson) => accumulator + data.value, 0);
+
+  const calcRemianing = () =>
+    barbecue.people
+      .filter((data) => !data.confirmed)
+      .reduce((accumulator: number, data: IPerson) => accumulator + data.value, 0);
 
   const SuggestedWithAlcohol = () => {
     return (
@@ -254,6 +233,38 @@ export default function DashboardItem({ params: { id } }: { params: { id: string
     );
   };
 
+  const TotalValue = () => {
+    return (
+      <>
+        <CurrencyFormat
+          value={calcTotal()}
+          displayType={'text'}
+          decimalSeparator=","
+          decimalScale={2}
+          fixedDecimalScale={true}
+          prefix={'R$ '}
+          renderText={(value: string) => <label>{value}</label>}
+        />
+      </>
+    );
+  };
+
+  const TotalRemaning = () => {
+    return (
+      <>
+        <CurrencyFormat
+          value={calcRemianing()}
+          displayType={'text'}
+          decimalSeparator=","
+          decimalScale={2}
+          fixedDecimalScale={true}
+          prefix={'R$ '}
+          renderText={(value: string) => <label>{value}</label>}
+        />
+      </>
+    );
+  };
+
   return (
     <>
       <Card>
@@ -265,12 +276,12 @@ export default function DashboardItem({ params: { id } }: { params: { id: string
           <CardValues>
             <CardTotal>
               <div>
-                <label>Sugestão de preço com bebida:</label>
+                <label>Sugestão com bebida:</label>
                 <SuggestedWithAlcohol />
               </div>
 
               <div>
-                <label>Sugestão de preço sem bebida:</label>
+                <label>Sugestão sem bebida:</label>
                 <SuggestedWithOutAlcohol />
               </div>
             </CardTotal>
@@ -282,11 +293,16 @@ export default function DashboardItem({ params: { id } }: { params: { id: string
 
               <div>
                 <Image src="/images/icon_money.svg" alt="icon-money" width={20} height={20} priority />
-                <label>{barbecue.total}</label>
+                <TotalValue />
+              </div>
+              <div>
+                <Image src="/images/icon_money.svg" alt="icon-money" width={20} height={20} priority />
+                <TotalRemaning />
               </div>
             </CardSuggested>
           </CardValues>
         </CardInfo>
+        {barbecue.observation}
         <DashboardItemList>
           <AddParticipantCard onClick={() => setOpen(true)}>
             <label>Adicionar participante</label>
@@ -296,13 +312,9 @@ export default function DashboardItem({ params: { id } }: { params: { id: string
               barbecue?.people.map((data: IPerson, i: number) => (
                 <li key={i} style={{ listStyleType: 'none', margin: 16 }}>
                   <ParticipantItem>
+                    <Checkbox data={data} onClick={() => handleConfirm(i)} />
                     <div>
-                      <HiddenCheckbox checked={data.confirmed} onChange={() => handlePerson(data.name)} />
-                      <StyledCheckbox checked={data.confirmed} onClick={() => handlePerson(data.name)} />
-
-                      <label>{data.name}</label>
-                    </div>
-                    <div>
+                      {data.confirmed && <Payed>Pago</Payed>}
                       <CurrencyFormat
                         value={data.value}
                         displayType={'text'}
@@ -310,16 +322,20 @@ export default function DashboardItem({ params: { id } }: { params: { id: string
                         decimalScale={2}
                         fixedDecimalScale={true}
                         prefix={'R$ '}
-                        renderText={(value: string) => (
+                        type="text"
+                        renderText={(formattedValue: string) => (
                           <label
                             style={{
                               textDecorationLine: data.confirmed ? 'line-through' : 'none',
                             }}
                           >
-                            {value}
+                            {formattedValue}
                           </label>
                         )}
                       />
+                      <Button variant="text" color="error" onClick={() => handleRemove(i)}>
+                        Remover
+                      </Button>
                     </div>
                   </ParticipantItem>
                   <Divider />
@@ -328,7 +344,8 @@ export default function DashboardItem({ params: { id } }: { params: { id: string
           </ul>
         </DashboardItemList>
       </Card>
-      <DialogAddParticipation isOpen={open} onClose={handleCloseDialog} onSubmit={handleAddPersion} />
+
+      <DialogAddParticipation isOpen={open} onClose={handleCloseDialog} onSubmit={handleAdd} />
     </>
   );
 }

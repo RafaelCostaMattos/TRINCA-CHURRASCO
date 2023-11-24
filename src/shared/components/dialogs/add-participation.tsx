@@ -47,7 +47,6 @@ export default function DialogAddParticipation({ isOpen, onClose, onSubmit }: ID
   });
 
   const onChangeFormField = (field: string, value: any) => {
-    console.log(value);
     setForm({ ...form, [field]: value });
   };
 
@@ -79,11 +78,15 @@ export default function DialogAddParticipation({ isOpen, onClose, onSubmit }: ID
               decimalScale={2}
               fixedDecimalScale={true}
               prefix={'R$ '}
+              type="text"
               onValueChange={(values) => onChangeFormField('value', values.floatValue)}
             />
             <FormControlLabel
               control={
-                <Switch defaultChecked={form.alcoholicDrink} onChange={(e, c) => onChangeFormField('alcohol', c)} />
+                <Switch
+                  defaultChecked={form.alcoholicDrink}
+                  onChange={(e, c) => onChangeFormField('alcoholicDrink', c)}
+                />
               }
               label="Com bêbida alcoolica"
             />
