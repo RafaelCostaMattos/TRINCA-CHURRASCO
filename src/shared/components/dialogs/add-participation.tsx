@@ -10,7 +10,7 @@ import {
   Button,
 } from '@mui/material';
 import { useState } from 'react';
-import CurrencyFormat from 'react-currency-format';
+import { NumericFormat } from 'react-number-format';
 import styled from 'styled-components';
 
 interface IDialogAddParticipation {
@@ -70,7 +70,7 @@ export default function DialogAddParticipation({ isOpen, onClose, onSubmit }: ID
               variant="outlined"
               onChange={(e) => onChangeFormField('name', e.target.value)}
             />
-            <CurrencyFormat
+            <NumericFormat
               required
               customInput={TextField}
               placeholder="Contribuição"

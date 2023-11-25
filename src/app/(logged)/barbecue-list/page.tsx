@@ -1,5 +1,4 @@
 'use client';
-
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
@@ -8,6 +7,7 @@ import { useState } from 'react';
 import { useBarbecueList } from '@/shared/hooks/useBarbecueList.hook';
 import DialogAddBarbecue from '@/shared/components/dialogs/add-barbecue';
 import { initList } from '@/shared/constants/list.constant';
+import { NumericFormat } from 'react-number-format';
 
 const Card = styled.div`
   display: flex;
@@ -127,7 +127,15 @@ export default function Dashboard() {
 
             <div>
               <Image src="/images/icon_people.svg" alt="icon-money" width={20} height={20} priority />
-              <label>{data.total}</label>
+              <NumericFormat
+                value={data.total}
+                displayType={'text'}
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale={true}
+                prefix={'R$ '}
+                renderText={(value: string) => <label>{value}</label>}
+              />
             </div>
           </CardValues>
         </Card>

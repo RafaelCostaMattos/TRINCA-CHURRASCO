@@ -1,4 +1,5 @@
-import { NextAuthOptions } from 'next-auth';
+import { NextAuthOptions, Session, User } from 'next-auth';
+import { AdapterUser } from 'next-auth/adapters';
 import NextAuth from 'next-auth/next';
 import Credentials from 'next-auth/providers/credentials';
 
@@ -31,12 +32,13 @@ const nextAuthOptions: NextAuthOptions = {
     signIn: '/',
   },
   callbacks: {
-    async jwt({ token, user }) {
-      user && (token.user = user);
+    async jwt({ token, user }: { token: any; user: User | AdapterUser }) {
+      if (user) token.user = user;
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: Session; token: any }) {
       session = token.user as any;
+      session.expires = token.exp;
       return session;
     },
   },

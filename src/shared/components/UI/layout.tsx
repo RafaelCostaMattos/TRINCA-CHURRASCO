@@ -2,6 +2,8 @@
 import Image from 'next/image';
 import styled from 'styled-components';
 import { ReactNode } from 'react';
+import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 const UIContainer = styled.div`
   width: 100vw;
@@ -25,6 +27,21 @@ const UITitle = styled.div`
   }
 `;
 
+const UIBtnLogout = styled.div`
+  position: absolute;
+  top: 2%;
+  right: 2%;
+
+  > button {
+    background: var(--text-black);
+    border-radius: var(--border-radius-18);
+    box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.06);
+    border: none;
+    padding: 0.8rem 7rem;
+    cursor: pointer;
+  }
+`;
+
 const UIImage = styled.div`
   width: 100vw;
   height: 30vh;
@@ -37,14 +54,26 @@ const UIChildren = styled.div`
   flex-flow: column wrap;
   flex-direction: row;
   max-width: 100%;
-  gap: var(--gap-24);
+  gap: var(--gap-36);
   justify-content: center;
 `;
 
 export default function UILayout({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  async function logout() {
+    await signOut({
+      redirect: false,
+    });
+
+    router.replace('/');
+  }
+
   return (
     <UIContainer>
       <UIImage>
+        <UIBtnLogout>
+          <button onClick={logout}>Sair</button>
+        </UIBtnLogout>
         <UITitle>
           <label>Agenda de Churras</label>
         </UITitle>

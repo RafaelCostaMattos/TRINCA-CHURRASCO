@@ -52,8 +52,6 @@ export default function DialogAddBarbecue({ isOpen, onClose, onSubmit }: IDialog
   });
 
   const onChangeFormField = (field: string, value: any) => {
-    console.log(field);
-    console.log(value);
     setForm({ ...form, [field]: value });
   };
 

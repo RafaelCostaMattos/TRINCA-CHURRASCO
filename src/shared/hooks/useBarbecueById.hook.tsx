@@ -26,7 +26,6 @@ export function useBarbecueById<T>(index: number) {
     localStorage.setItem(EList.LOCALSTORAGE, JSON.stringify(newList));
   };
 
-  // Função para retornar o churrasco com o index passado
   const getBarbecueListByIndex = (barbecue: IBarbecue): IBarbecue | undefined => {
     if (typeof barbecue === 'undefined') return;
 

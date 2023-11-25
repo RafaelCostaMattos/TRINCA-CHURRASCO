@@ -10,7 +10,6 @@ interface IPrivateLayout {
 
 export default async function PrivateLayout({ children }: IPrivateLayout) {
   const session = await getServerSession(nextAuthOptions);
-  console.log(session);
   if (!session) redirect('/');
 
   return <AuthContextProvider>{children}</AuthContextProvider>;
