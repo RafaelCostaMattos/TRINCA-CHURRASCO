@@ -88,7 +88,7 @@ export default function DialogAddParticipation({ isOpen, onClose, onSubmit }: ID
                   onChange={(e, c) => onChangeFormField('alcoholicDrink', c)}
                 />
               }
-              label="Com bêbida alcoolica"
+              label="Com bebida"
             />
           </div>
           <div>

@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useBarbecueList } from '@/shared/hooks/useBarbecueList.hook';
 import DialogAddBarbecue from '@/shared/components/dialogs/add-barbecue';
 import { initList } from '@/shared/constants/list.constant';
-import { NumericFormat } from 'react-number-format';
+import BarbecueListCard from '@/shared/components/barbecue-list-card';
 
 const Card = styled.div`
   display: flex;
@@ -23,48 +23,6 @@ const Card = styled.div`
   margin: -44px 0 20px;
 
   cursor: pointer;
-`;
-
-const CardText = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--gar-8);
-
-  > label {
-    color: var(--text-black);
-    font-size: 28px;
-    font-style: normal;
-    font-weight: 800;
-    line-height: normal;
-  }
-
-  > span {
-    font-size: 21px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-  }
-`;
-
-const CardValues = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-  > div {
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-
-    align-items: center;
-
-    > label {
-      font-size: 21px;
-      font-style: normal;
-      font-weight: 500;
-      line-height: normal;
-    }
-  }
 `;
 
 const CardAdd = styled.div`
@@ -93,10 +51,13 @@ const IconAdd = styled.div`
   align-items: center;
 `;
 
-export default function Dashboard() {
+export default function BarbecueList() {
   const router = useRouter();
-  const { list, updateBarbecueLocalStorage } = useBarbecueList(initList);
+  const { list, loading, updateBarbecueLocalStorage } = useBarbecueList(initList);
   const [open, setOpen] = useState<boolean>(false);
+
+  if (loading) return <p>Buscando informações...</p>;
+  if (!list) return;
 
   const handleCloseDialog = () => {
     setOpen(false);
@@ -114,31 +75,7 @@ export default function Dashboard() {
   return (
     <>
       {list.map((data: IBarbecue, i: number) => (
-        <Card key={i} onClick={() => handleItem(i)}>
-          <CardText>
-            <label>{data.date}</label>
-            <span>{data.title}</span>
-          </CardText>
-          <CardValues>
-            <div>
-              <Image src="/images/icon_people.svg" alt="icon-money" width={20} height={20} priority />
-              <label>{data.people.length}</label>
-            </div>
-
-            <div>
-              <Image src="/images/icon_people.svg" alt="icon-money" width={20} height={20} priority />
-              <NumericFormat
-                value={data.total}
-                displayType={'text'}
-                decimalSeparator=","
-                decimalScale={2}
-                fixedDecimalScale={true}
-                prefix={'R$ '}
-                renderText={(value: string) => <label>{value}</label>}
-              />
-            </div>
-          </CardValues>
-        </Card>
+        <BarbecueListCard key={i} data={data} onSelect={() => handleItem(i)} />
       ))}
       <Card onClick={() => setOpen(true)}>
         <CardAdd>

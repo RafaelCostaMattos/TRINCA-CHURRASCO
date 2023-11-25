@@ -16,7 +16,7 @@ export function useBarbecueById<T>(index: number) {
       getBarbecueListByIndex(JSON.parse(value)[index]);
     }
     setLoading(false);
-  }, [window]);
+  }, []);
 
   const updateBarbecueIndexLocalStorage = (barbecue: IBarbecue): void => {
     const newList = list.map((data, i) => (i === index ? barbecue : data));

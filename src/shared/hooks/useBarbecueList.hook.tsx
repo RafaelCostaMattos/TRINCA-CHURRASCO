@@ -3,7 +3,8 @@ import { EList } from '../enums/list.enum';
 import { IBarbecue } from '../interfaces/list.inteface';
 
 export function useBarbecueList<T>(initList: IBarbecue[]) {
-  const [list, setList] = useState<IBarbecue[]>(initList);
+  const [list, setList] = useState<IBarbecue[]>();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -12,9 +13,11 @@ export function useBarbecueList<T>(initList: IBarbecue[]) {
     if (value) {
       setList(JSON.parse(value));
     } else {
+      setList(initList);
       localStorage.setItem(EList.LOCALSTORAGE, JSON.stringify(initList));
     }
-  }, [window]);
+    setLoading(false);
+  }, []);
 
   const updateBarbecueLocalStorage = (newList: IBarbecue[]): void => {
     setList(newList);
@@ -23,6 +26,7 @@ export function useBarbecueList<T>(initList: IBarbecue[]) {
 
   return {
     list,
+    loading,
     updateBarbecueLocalStorage,
   };
 }

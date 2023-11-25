@@ -70,6 +70,7 @@ export default function DialogAddBarbecue({ isOpen, onClose, onSubmit }: IDialog
               <DemoContainer components={['DatePicker']} sx={{ width: '100%' }}>
                 <DatePicker
                   label="Data do churrasco"
+                  disablePast
                   onChange={(value: any) => onChangeFormField('date', dayjs(value.$d).format('DD/MM/YY'))}
                 />
               </DemoContainer>

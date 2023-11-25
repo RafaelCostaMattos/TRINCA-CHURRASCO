@@ -85,14 +85,6 @@ const FieldBtn = styled.button`
   border: none;
   padding: 0.8rem 7rem;
   cursor: pointer;
-
-  > label {
-    cursor: pointer;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-  }
 `;
 
 export default function SignIn() {
@@ -138,7 +130,7 @@ export default function SignIn() {
             <FieldInput type="password" name="senha" placeholder="senha" required />
           </Field>
           <FieldBtn type="submit" disabled={loading}>
-            <label>Entrar</label>
+            Entrar
           </FieldBtn>
           {error && <label>{error}</label>}
         </Card>

@@ -23,18 +23,16 @@ const Card = styled.div`
 export default function BarbecueItem({ params: { id } }: { params: { id: string } }) {
   const { barbecue, loading, updateBarbecueIndexLocalStorage } = useBarbecueById(Number(id));
 
-  if (loading) return;
+  if (loading) return <p>Buscando informações...</p>;
   if (!barbecue) redirect('/');
 
   return (
     <Card>
-      {barbecue && (
-        <>
-          <BarbecueDetailInfo barbecue={barbecue} />
-          {barbecue?.observation}
-          <BarbecueDetailList barbecue={barbecue} id={Number(id)} update={updateBarbecueIndexLocalStorage} />
-        </>
-      )}
+      <>
+        <BarbecueDetailInfo barbecue={barbecue} />
+        {barbecue?.observation}
+        <BarbecueDetailList barbecue={barbecue} id={Number(id)} update={updateBarbecueIndexLocalStorage} />
+      </>
     </Card>
   );
 }
